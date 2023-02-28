@@ -2,6 +2,8 @@
 
 namespace App\Http\Requests;
 
+use App\Models\Group;
+use Illuminate\Validation\Rule;
 use Illuminate\Foundation\Http\FormRequest;
 
 class StoreQuestionRequest extends FormRequest
@@ -13,7 +15,7 @@ class StoreQuestionRequest extends FormRequest
      */
     public function authorize()
     {
-        return false;
+        return true;
     }
 
     /**
@@ -24,7 +26,16 @@ class StoreQuestionRequest extends FormRequest
     public function rules()
     {
         return [
-            //
+            'group' => [
+                'required',
+                Rule::in(Group::pluck('name')->all()),
+            ],
+            'course' =>[
+                'required'
+            ],
+            'question' => [
+                'required'
+            ],
         ];
     }
 }

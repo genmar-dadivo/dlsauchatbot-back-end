@@ -13,7 +13,7 @@ class UpdateQuestionRequest extends FormRequest
      */
     public function authorize()
     {
-        return false;
+        return true;
     }
 
     /**
@@ -24,7 +24,18 @@ class UpdateQuestionRequest extends FormRequest
     public function rules()
     {
         return [
-            //
+            'id' => [
+                'required'
+            ],
+            'group_id' => [
+                'required'
+            ],
+            'course' => [
+                'required'
+            ],
+            'question' => [
+                'required'
+            ],
         ];
     }
 }

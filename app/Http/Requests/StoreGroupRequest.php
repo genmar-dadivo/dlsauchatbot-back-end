@@ -4,7 +4,7 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class StoreTalkRequest extends FormRequest
+class StoreGroupRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -24,12 +24,9 @@ class StoreTalkRequest extends FormRequest
     public function rules()
     {
         return [
-            'message' => [
+            'name' => [
                 'required',
-                'unique:talks,message',
-            ],
-            'type' => [
-                'required'
+                'unique:groups'
             ]
         ];
     }

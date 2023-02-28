@@ -66,6 +66,66 @@ class ChatController extends Controller
 
     }
 
+    public function computeExam(Request $request)
+    {
+        $department = $request->department;
+        $yes = $request->yes;
+        $scoreHandler = [];
+        $totalHandler = [];
+        $resultHandler = [];
+
+        if ($yes) {
+            $group_id = Group::where('name', '=', $department)->pluck('id')->first();
+            $questions = Question::where('group_id', '=', $group_id)
+                ->whereIn('id', $yes)->select('course')->get();
+
+            foreach ($questions as $question) {
+                $qs = $question->course;
+                if (str_contains($qs, '|')) {
+                    $q = explode('|', $qs);
+                    foreach($q as $question)
+                    {
+                        $scoreHandler[] = $question;
+                    }
+                }
+                else {
+                    $scoreHandler[] = $qs;
+                }
+                $getScore = array_count_values($scoreHandler);
+
+            }
+
+            $getTotals = array_unique($scoreHandler);
+            foreach ($getTotals as $getTotal) {
+                $getCount = Question::where('course', 'LIKE', '%' . $getTotal . '%')->count();
+                $totalHandler[$getTotal] = $getCount;
+
+                $resultHandler[] = $getTotal . ':' . ceil(($getScore[$getTotal] / $getCount) * 100);
+            }
+
+
+            // return [
+            //     'q' => $getScore,
+            //     // 'q' => array_count_values($scoreHandler),
+            //     't' => $totalHandler,
+            //     'r' => $resultHandler
+            // ];
+
+            return $resultHandler;
+        }
+        else {
+            return [
+                'score' => 0,
+                'message' => 'No score',
+            ];
+        }
+    }
+
+    public function getResult()
+    {
+        return 1;
+    }
+
     public function index()
     {
         //

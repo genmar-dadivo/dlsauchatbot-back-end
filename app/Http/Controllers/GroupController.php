@@ -5,6 +5,9 @@ namespace App\Http\Controllers;
 use App\Models\Group;
 use App\Http\Requests\StoreGroupRequest;
 use App\Http\Requests\UpdateGroupRequest;
+use App\Models\Question;
+use Illuminate\Http\Client\Request;
+use PhpParser\Node\Stmt\GroupUse;
 
 class GroupController extends Controller
 {
@@ -16,6 +19,14 @@ class GroupController extends Controller
     public function index()
     {
         //
+    }
+
+    public function filter($group)
+    {
+        $id = Group::where('name', '=', $group)->pluck('id')->first();
+        return $questions = Question::where('group_id', '=', $id)
+                ->select('id', 'group_id', 'course', 'question')
+                ->get();
     }
 
     /**
@@ -36,7 +47,19 @@ class GroupController extends Controller
      */
     public function store(StoreGroupRequest $request)
     {
-        //
+        $name = Group::create([
+            'name' => $request->name,
+        ]);
+
+        if ($name) {
+            return response([
+                'message' => 'Group Inserted'
+            ], 200);
+        }
+
+        return response([
+            'message' => 'Error Occured'
+        ], 500);
     }
 
     /**
@@ -68,7 +91,7 @@ class GroupController extends Controller
      * @param  \App\Models\Group  $group
      * @return \Illuminate\Http\Response
      */
-    public function update(UpdateGroupRequest $request, Group $group)
+    public function update(Request $request, Group $group)
     {
         //
     }
@@ -79,8 +102,20 @@ class GroupController extends Controller
      * @param  \App\Models\Group  $group
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Group $group)
+    public function destroy($group)
     {
-        //
+        $id = Group::where('name', '=', $group)
+            ->select('id')
+            ->get();
+        $dg = Group::destroy($id);
+        if ($dg) {
+            return response([
+                'message' => 'Data Deleted'
+            ]);
+        }
+
+        return response([
+            'message' => 'Error Occured'
+        ]);
     }
 }
